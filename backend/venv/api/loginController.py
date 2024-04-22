@@ -10,15 +10,20 @@ login_parser.add_argument('password', type=str, required=True, help='Password', 
 class LoginResource(Resource):
     @api2.expect(login_parser)
     def post(self):
-        """Login a user and return a token"""
+        """Login a user and return a token along with user ID and email"""
         args = login_parser.parse_args()
-        token = loginService(email=args['email'], password=args['password'])
+        login_response = loginService(email=args['email'], password=args['password'])
         
-        if token is None:
-            # This means there was an error processing the request
+        if login_response is None:
+            # This means there was an error processing the request or invalid credentials
             api2.abort(500, 'Internal server error')
-        elif token:
-            # A token is generated and returned upon successful login
-            return {'message': 'Login successful', 'token': token}, 200
+        elif login_response:
+            # Response will now include the token, user_id, and email
+            return {
+                'message': 'Login successful',
+                'token': login_response['token'],
+                'user_id': login_response['user_id'],
+                'email': login_response['email']
+            }, 200
         else:
             return {'message': 'Invalid credentials'}, 401

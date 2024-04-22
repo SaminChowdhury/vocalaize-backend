@@ -21,9 +21,9 @@ def loginService(email, password):
                 'iat': datetime.datetime.utcnow()
             }
             token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-            return token
+            return {'token': token, 'user_id': user.id, 'email': user.email}  # Return additional user info
         else:
-            return False
+            return None
     except SQLAlchemyError as e:
         db.session.rollback()
         # Handle the exception, possibly logging it
