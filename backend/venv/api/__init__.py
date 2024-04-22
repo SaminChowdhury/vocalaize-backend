@@ -3,3 +3,5 @@ from . import signupController
 from . import loginController
 from . import subscriptionLevelController
 from . import createTranslationController
+from . import getTranslationInfoController
+from . import updateTranslationController
