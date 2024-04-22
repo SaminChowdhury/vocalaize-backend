@@ -1,11 +1,14 @@
-from transformers import MarianMTModel, MarianTokenizer
-from TTS.api import TTS
 import tempfile
-import whisper
-from pydub import AudioSegment
 import os
 import io
+
+from transformers import MarianMTModel, MarianTokenizer
+from TTS.api import TTS
+import whisper
+from pydub import AudioSegment
+
 import requests
+import json
 
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.http import MediaIoBaseDownload
@@ -280,9 +283,27 @@ def main():
   # Command line to get translation_id
   translation_id = sys.argv[1]
 
-  # API Get
-  GET_url = ""
+  print(translation_id)
+
+  # API GET - get input_drive_path, source_language, target_language from backend
+  GET_url = f"http://127.0.0.1:5000/translation/{translation_id}"
+
   response = requests.get(GET_url)
+
+  data = response.json()
+
+  print("Status Code:", response.status_code)
+  print("Response Body:", response.text) 
+
+  file_name = data.get("input_drive_path")
+  init_lang = data.get("source_language")
+  target_lang = data.get("target_language")
+
+  print(file_name, init_lang, target_lang)
+
+  # Get NLP codes from nlp_codes mapping
+  init_lang = nlp_codes.get(init_lang)
+  target_lang = nlp_codes.get(target_lang)
 
   # Authenticate & download audio file
   service = authenticate_drive()
@@ -304,15 +325,6 @@ def main():
 
   # Merge lines in transcribed text
   merge_lines(transcribed)
-
-  ######################## INPUT TO CHANGE: Initial Language
-  input1 = 
-  init_lang = nlp_codes.get(input1['choice'])
-
-  ######################### INPUT TO CHANGE: Language to translate to
-
-  input2 = 
-  target_lang = nlp_codes.get(input2['choice'])
 
   # Get model name(s) from direct / indirect path
   nlp_model = model_name(init_lang, target_lang)
@@ -342,7 +354,21 @@ def main():
   # Upload translated audio to Google Drive
   upload_file(service, output_folder, output_audio)
 
-  # Send DONE to server
+  output_audio = (os.path.splitext(os.path.basename(output_audio))[0] + '.wav')
+  print(output_audio)
+
+  # API PUT - send output_drive_path to backend
+  PUT_url = f"http://localhost:5000/translation/{translation_id}"
+  out_params = {
+    'output_drive_path': output_audio
+  }
+
+  json_data = json.dumps(out_params)
+
+  headers = {
+    'Content-Type': 'application/json'
+  }
+  response = requests.put(PUT_url, data=json.dumps(out_params), headers=headers)
 
 if __name__ == '__main__':
   main()
