@@ -25,7 +25,7 @@ class SignupResource(Resource):
     def post(self):
         """Sign up a new user"""
         args = signup_parser.parse_args()
-        hashed_password = generate_password_hash(args['password'], method='sha256')
+        hashed_password = generate_password_hash(args['password'], method='scrypt')
         user = signupService(email=args['email'], password=hashed_password)
         if user:
             return user, 201
