@@ -26,7 +26,14 @@ def create_translation_service(data):
         translation_id = result.fetchone()[0]
 
         db.session.commit()
-        return {"message": "Translation created successfully", "translation_id": translation_id}, 201
+        #run_python_script(translation_id)
+        return {"message": "Translation created successfully", "translation_id": translation_id}
     except Exception as e:
         db.session.rollback()
         return {"error": str(e)}, 500
+import subprocess
+
+def run_python_script(translation_id):
+    # Pass the translation_id as an argument to the script
+    result = subprocess.run(['python3', 'translation/translate.py', str(translation_id)], capture_output=True, text=True)
+    print(result.stdout) 

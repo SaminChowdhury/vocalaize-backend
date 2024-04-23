@@ -7,3 +7,5 @@ from . import getTranslationInfoController
 from . import updateTranslationController
 from . import authValidController
 from . import getSubscriptionLevelController
+from . import uploadToGoogleDriveController
+from . import uploadToGoogleDriveFinalController
