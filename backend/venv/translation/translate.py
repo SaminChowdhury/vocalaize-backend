@@ -117,19 +117,6 @@ def download_file(service, folder_id, file_name, temp_dir):
   
   return file_path
 
-### Upload file to Google Drive
-def upload_file(service, folder_id, file_path):
-  file_metadata = {
-    'name': os.path.basename(file_path),
-    'parents': [folder_id]
-  }
-
-  media = MediaFileUpload(file_path, resumable=True)
-  file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-  print(f"File ID: {file.get('id')}")
-
-  return file.get('id')
-
 ### Change audio format to wav if not already
 def convert_wav(audio):
   # Set path
@@ -311,9 +298,6 @@ def main():
   # Path to 'input' folder
   input_folder ="1a6q5sEvEBMz7zNSsKRqfolaTlq9L2bvv"
 
-  # Path to 'output' folder
-  output_folder = "1-KnlSu6nLfhfmAO8LQUuEtbErH3OgzuH"
-
   # Download audio file
   input_audio = download_file(service, input_folder, file_name, temp_dir.name)
 
@@ -351,19 +335,22 @@ def main():
   # Use TTS to generate translated audio
   output_audio = generate_speech(translated_text, input_audio, target_lang)
 
-  # Upload translated audio to Google Drive
-  upload_file(service, output_folder, output_audio)
+  # API POST - send file to backend
+  POST_url = "http://127.0.0.1:5000/upload-audio-final"
 
-  output_audio = (os.path.splitext(os.path.basename(output_audio))[0] + '.wav')
-  print(output_audio)
+  output_audio_base = (os.path.splitext(os.path.basename(output_audio))[0] + '.wav')
+  print(output_audio_base)
+  
+  with  open(output_audio, 'rb') as audio_file:
+    files={'file': (output_audio_base, audio_file, 'audio/wav')}
+    response = requests.post(POST_url, files=files)
+    print(response.status_code, response.text)
 
-  # API PUT - send output_drive_path to backend
+  # API PUT - send translation ID to backend
   PUT_url = f"http://localhost:5000/translation/{translation_id}"
   out_params = {
-    'output_drive_path': output_audio
+    'output_drive_path': output_audio_base
   }
-
-  json_data = json.dumps(out_params)
 
   headers = {
     'Content-Type': 'application/json'
