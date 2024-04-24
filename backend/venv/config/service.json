@@ -1,0 +1,13 @@
+{
+    "type": "service_account",
+    "project_id": "vocalaize-418821",
+    "private_key_id": "c6eee21f909dda6facf313fb2eb6a2450d32024d",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCv3fIHcSwdWM8A\nKDd6R/MJD/N5vvI3t74Ziu8djGMH1twTCiUhjm59NbY9vfhjA6CXP56gKIVfdJWr\nBmbY0+ew+MGdekwBaRYcMuvFQTma7n2DdXiT+wPuCZEyJLdnswB9g02IwFan3SSn\n2X5I9jX8/86R+BYjD0IKc9WJ0Rux53sscl0vTn2VUgqOExFBnizbl9feR9vIP1W6\nOOGOF8TQAui5ajP/Mbov3EceldVijTVBJTUnTiHYGPVRShgKX78Cd5wZG6kgbuz7\ndfduPnQVyKiB/dt+hWspAf6iNFdU8mUuSmirL77iCYC/10+cHeQ15pS0hHJb2oV0\nyCYW57oBAgMBAAECggEATl70nTZkt0s9K8/AMUDg4Bf4ozdhT00VbOKJ/jvyYarw\n9Zcext5nBGssJEWE6/LQ3LXgJXUJQml8zPMUX+nGpQmlllzKhBJlZPmYMZYIaq9+\nxVdS/Xbt4GTpDFRqWs7dGBGsOpWjyDh3PklgynjVxEHmtwu8KbGB95B5B2plEhjd\nlcHqj46BieEFHyzMEya5f1MgE25cJ4JbMoSmVnwHTwbuQp2b7ycL0Vnlb709ggpe\nKd6f/rQWM/LsPW/P/NSSQrB6Kj0Qr4HzTrfR3PhKIhXoyitbPZO2ZCAd6L55GLvM\nj9w/VzRwS2jurPdxT76+uBfIgWjrPCJm/tshJ+EZVQKBgQDY33ZUQ0DWwGVDvKG5\nG4sND8i9V5ewjaOChEIdCckzZ5iuJXHIQNios7/dCxoXuhvc9F2K0J/z3dJPR4v+\nCAdu7RI2FUHstWs+4LPd4FYAuCoHDxBYovSYkSEmOLrsymDMGR8AV92QJUAAXIRw\nBX57zwVxMdyzex1Lcsul6OJOzwKBgQDPmJMpAAeThsZE7WxfPZX7AaIbLb1UZveP\nUniYtr23yITmbFnWUW0tSS9riwyd7IkCo+LC2CparpetJNGyo6mfN6MMY5hsjKa4\n6Bv8dovZhpb89hqiC91dRE+o+UMfkS3OuzWrmQA6d5kbE2gQ9GfUZ48LHSwDYXlq\nIzT6PbEeLwKBgFifcH5cgTmAo6D7i2bWT4tF4PUmvzEBoEisfUvafOLJucWoPYfk\nn+TIl2XfrIj3n306SqN4P3TrN474IMftRgRZUnDRXQA63plyP24yx1JB78K0sCxY\nYvWZkN9KnXA3/zhIJ7f/L+ZAopfDNseEJzy2y3WHN7YMYFs9jOS+dwRXAoGABf8N\nOSD0FxHMhk8pUzLvMxnf+dL/ZgG3Yt9p9ldI8ZcMJ6+3hJZDhgxYH04b5i/f4UCk\nmyYtSwNCBFFM8VEC5ENyJTh3PaNuaWbi8A7oiTb3A4WETWv0T+5aMrJIew/xd8g2\ni6dWt1mfBYYw+lRk72CyZArKq6pUHHm53QSNKicCgYEApI+RaAtK2R/IKRdhtjyp\nUdYSDIU4as+SdF+P6IhKDrDnwB8QuApeBEB9yoUUdJ44lx+n3fbkQkn+kjQuaF6H\nN2ynDBR0voNqNy9GC9ruyg28e/p9aiYVuigZC0adgQ+ttxoBXhvh9Iq8VFf+xsLa\nq2tyx7sDK9b+WiuYpDyhz+w=\n-----END PRIVATE KEY-----\n",
+    "client_email": "testingservice@vocalaize-418821.iam.gserviceaccount.com",
+    "client_id": "100817681267906323733",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/testingservice%40vocalaize-418821.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+  }
