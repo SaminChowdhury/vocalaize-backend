@@ -18,7 +18,10 @@ class UploadAudio(Resource):
             return {'error': 'No selected file'}, 400
 
         filename = secure_filename(file.filename)
-        file_path = os.path.join('/tmp', filename)
+        # Use a directory that exists on Windows, ensure C:\tmp is created or use another valid path
+        file_path = os.path.join('C:\\tmp', filename)
+        # Make sure the directory exists, if not, create it
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
         file.save(file_path)
 
         try:
@@ -26,8 +29,8 @@ class UploadAudio(Resource):
             file_id = upload_file_to_drive(filename, file_path, folder_id)
 
             translation_data = {
-                'user_id': request.form.get('user_id'),
-                'input_drive_path': filename,
+                'user_id': request.form.get('user_id', None),
+                'input_drive_path': filename,  # Use file_id as input path for clarity in data
                 'output_drive_path': None,
                 'source_language': request.form.get('source_language'),
                 'target_language': request.form.get('target_language')
@@ -39,6 +42,7 @@ class UploadAudio(Resource):
 
             return {'message': 'File uploaded and translation created', 'translation_id': translation_id}, 200
         except Exception as e:
-            os.remove(file_path)
+            if os.path.exists(file_path):
+                os.remove(file_path)
             return {'error': str(e)}, 500
 

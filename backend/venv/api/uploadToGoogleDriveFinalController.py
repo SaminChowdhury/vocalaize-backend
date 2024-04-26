@@ -3,7 +3,6 @@ from flask_restx import Resource, Namespace, fields
 from werkzeug.utils import secure_filename
 import os
 from services.uploadToGoogleDriveService import upload_file_to_drive
-from services.createTranslationService import create_translation_service
 from app import api2
 
 # Assuming 'api2' is a valid Namespace object already defined somewhere in your application.
@@ -18,23 +17,27 @@ class UploadAudio(Resource):
             return {'error': 'No selected file'}, 400
 
         filename = secure_filename(file.filename)
-        file_path = os.path.join('/tmp', filename)
+        # Using Windows compatible path and ensuring the directory exists
+        file_path = os.path.join('C:\\tmp', filename)  # Ensure this directory exists or create it
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # Create the directory if it doesn't exist
         file.save(file_path)
 
         try:
-            folder_id = '1-KnlSu6nLfhfmAO8LQUuEtbErH3OgzuH'
-            file_id = upload_file_to_drive(filename, file_path, folder_id)
+            folder_id = '1-KnlSu6nLfhfmAO8LQUuEtbErH3OgzuH'  # Your Google Drive folder ID
+            file_id = upload_file_to_drive(filename, file_path, folder_id)  # Upload file to Google Drive
+
+            # Building the drive path with file_id instead of filename
+            output_drive_path = f"{folder_id}/{file_id}"  # Construct the path with folder_id and file_id
 
             translation_data = {
-                'user_id': request.form.get('user_id'),
-                'output_drive_path': request.form.get('output_drive_path')
+                'user_id': request.form.get('user_id', type=int),  # Fetch user_id, assuming it's sent as form data
+                'output_drive_path': output_drive_path
             }
-            try:
-                os.remove(file_path)
-            except:
-                print("No Path")
-            return {'message': 'File uploaded'}, 200
-        except Exception as e:
-            os.remove(file_path)
-            return {'error': str(e)}, 500
+            # Here you can further process translation_data as needed
 
+            os.remove(file_path)  # Remove the file after uploading to Google Drive
+            return {'message': 'File uploaded', 'file_id': file_id, 'drive_path': output_drive_path}, 200
+        except Exception as e:
+            if os.path.exists(file_path):
+                os.remove(file_path)  # Safely remove file only if it exists
+            return {'error': str(e)}, 500

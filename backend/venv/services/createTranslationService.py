@@ -26,6 +26,17 @@ def create_translation_service(data):
         translation_id = result.fetchone()[0]
 
         db.session.commit()
+        process = subprocess.Popen(['python3', 'translation/translate.py', str(translation_id)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        while True:
+            output = process.stdout.readline()
+            if output == '' and process.poll() is not None:
+                break
+            if output:
+                print(output.strip())
+        stderr = process.communicate()[1]
+        if stderr:
+            print("Errors:", stderr)
+
         #run_python_script(translation_id)
         return {"message": "Translation created successfully", "translation_id": translation_id}
     except Exception as e:
