@@ -328,24 +328,36 @@ def main():
   if (target_lang == 'zh'):
     target_lang = 'zh-cn'
 
-  # Use TTS to generate translated audio
+  # Simulated output from a function that generates speech
   output_audio = generate_speech(translated_text, input_audio, target_lang)
 
-  # API POST - send file to backend
+  # The backend endpoint for uploading audio files
   POST_url = "http://127.0.0.1:5000/upload-audio-final"
 
-  output_audio_base = (os.path.splitext(os.path.basename(output_audio))[0] + '.wav')
-  print(output_audio_base)
-  
-  with  open(output_audio, 'rb') as audio_file:
-    files={'file': (output_audio_base, audio_file, 'audio/wav')}
-    response = requests.post(POST_url, files=files)
-    print(response.status_code, response.text)
+  # Construct the filename for the audio file
+  output_audio_base = os.path.splitext(os.path.basename(output_audio))[0] + '.wav'
+  print("Generated audio file:", output_audio_base)
+
+  # Open the generated audio file in binary mode for reading
+  with open(output_audio, 'rb') as audio_file:
+      # Prepare the file data as a dictionary of the form {'file': file_tuple}
+      # file_tuple should be (filename, fileobject, content_type)
+      files = {'file': (output_audio_base, audio_file, 'audio/wav')}
+      # Assuming you have a way to specify or retrieve the translation ID
+      # Include the translation ID in the form data
+      data = {'translation_id': translation_id}
+
+      # Make the POST request with both the file and the additional data
+      response = requests.post(POST_url, files=files, data=data)
+
+      # Print the response from the server
+      print("Response status code:", response.status_code)
+      print("Response body:", response.text)
 
   # API PUT - send translation ID to backend
   PUT_url = f"http://localhost:5000/translation/{translation_id}"
   out_params = {
-    'output_drive_path': output_audio_base
+
   }
 
   headers = {
