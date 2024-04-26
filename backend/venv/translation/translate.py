@@ -16,6 +16,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.discovery import build
+from google.oauth2 import service_account
 
 import sys
 
@@ -71,51 +72,46 @@ nlp_unavail = {
   ('ja', 'zh'), ('ja', 'hi')
 }
 
-### Authenticate Google Drive
+
+# Path to the service account credentials file
+SERVICE_ACCOUNT_FILE = 'config/service.json'
+SCOPES = ['https://www.googleapis.com/auth/drive']
+
 def authenticate_drive():
-  creds = None
-  # token.json created automatically when authorization completes first time
-  token_path = 'token.json'
-  # Check if token file exists
-  if os.path.exists(token_path):
-      creds = Credentials.from_authorized_user_file(token_path, SCOPES)
-  # If there are no (valid) credentials available, let user log in
-  if not creds or not creds.valid:
-      if creds and creds.expired and creds.refresh_token:
-          creds.refresh(Request())
-      else:
-          flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-          creds = flow.run_local_server(port=0)
-      # Save credentials
-      with open(token_path, 'w') as token:
-          token.write(creds.to_json())
-  return build('drive', 'v3', credentials=creds)
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    service = build('drive', 'v3', credentials=credentials)
+    return service
 
-### Download audio file from Google Drive
+
 def download_file(service, folder_id, file_name, temp_dir):
-  query = f"'{folder_id}' in parents and name = '{file_name}'" # Folder & File Name from API
-  results = service.files().list(q=query, fields="files(id, name)").execute()
-  items = results.get('files', [])
+    # Construct the query to find the file in the specified folder
+    query = f"'{folder_id}' in parents and name = '{file_name}'"
+    results = service.files().list(q=query, fields="files(id, name)").execute()
+    items = results.get('files', [])
 
-  # No files found
-  if not items:
-    print('No files found.')
-    exit(1)
-  
-  input_file = items[0]
-  request = service.files().get_media(fileId=input_file['id'])
-  fh = io.BytesIO()
-  downloader = MediaIoBaseDownload(fh, request)
-  done = False
-  while not done:
-    status, done = downloader.next_chunk()
-    print(f"Download {int(status.progress() * 100)}%.")
+    # Handle the case where no files are found
+    if not items:
+        print('No files found.')
+        return None
 
-  file_path = os.path.join(temp_dir, input_file['name'])
-  with open(file_path, 'wb') as file:
-    file.write(fh.getbuffer())
-  
-  return file_path
+    # Assuming we want the first file matching the criteria
+    input_file = items[0]
+    request = service.files().get_media(fileId=input_file['id'])
+    fh = io.BytesIO()
+    downloader = MediaIoBaseDownload(fh, request)
+    done = False
+    while not done:
+        status, done = downloader.next_chunk()
+        print(f"Download {int(status.progress() * 100)}% complete.")
+
+    # Save the downloaded file to the specified local directory
+    file_path = os.path.join(temp_dir, input_file['name'])
+    with open(file_path, 'wb') as file:
+        file.write(fh.getbuffer())
+    
+    return file_path
+
 
 ### Change audio format to wav if not already
 def convert_wav(audio):
@@ -144,7 +140,7 @@ def transcribe(audio, model_type = 'base', dir = temp_dir.name):
   transcribed_filename = os.path.join(dir, base_filename + '.txt')
 
   # Assignments
-  whisper_model = whisper.load_model(model_type, device='cuda')
+  whisper_model = whisper.load_model(model_type, device='cpu')
   transcribed = whisper_model.transcribe(audio)
 
   with open(transcribed_filename, 'w') as file:
@@ -255,7 +251,7 @@ def generate_speech(translated_text, audio, target_lang, dir = temp_dir.name):
     text = file.read()
 
   # Initialize model
-  tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to("cuda")
+  tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to("cpu")
 
   # Translate text
   tts.tts_to_file(text=text,

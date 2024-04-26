@@ -9,3 +9,6 @@ from . import authValidController
 from . import getSubscriptionLevelController
 from . import uploadToGoogleDriveController
 from . import uploadToGoogleDriveFinalController
+from . import fetch_translated_audio
+
+
